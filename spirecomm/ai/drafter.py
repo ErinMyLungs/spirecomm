@@ -1,5 +1,5 @@
 #Drafting module to replace priorities.py for card choice
-from priorities import IroncladPriority
+from spirecomm.ai.priorities import IroncladPriority
 import random
 
 class IroncladDraftModel():

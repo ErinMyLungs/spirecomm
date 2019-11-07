@@ -7,7 +7,7 @@ import spirecomm.spire.card
 from spirecomm.spire.screen import RestOption
 from spirecomm.communication.action import *
 from spirecomm.ai.priorities import *
-from drafter import IroncladDraftModel
+from spirecomm.ai.drafter import IroncladDraftModel
 
 class SimpleAgent:
 
