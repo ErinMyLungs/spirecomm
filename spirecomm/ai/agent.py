@@ -11,7 +11,7 @@ from spirecomm.ai.drafter import IroncladDraftModel
 
 class SimpleAgent:
 
-    def __init__(self, chosen_class=PlayerClass.THE_SILENT):
+    def __init__(self, chosen_class=PlayerClass.THE_SILENT, use_default_drafter=False):
         self.game = Game()
         self.errors = 0
         self.choose_good_card = False
@@ -22,6 +22,7 @@ class SimpleAgent:
         self.priorities = Priority()
         self.drafter = IroncladDraftModel()
         self.change_class(chosen_class)
+        self.use_default_drafter=use_default_drafter #if set to True, uses built in drafter from priorities module
 
     def change_class(self, new_class):
         self.chosen_class = new_class
@@ -152,8 +153,13 @@ class SimpleAgent:
                 return ProceedAction()
         elif self.game.screen_type == ScreenType.REST:
             return self.choose_rest_option()
+
         elif self.game.screen_type == ScreenType.CARD_REWARD:
-            return self.choose_card_reward()
+            if self.use_default_drafter:
+                return self.default_choose_card_reward()
+            else:
+                return self.choose_card_reward()
+
         elif self.game.screen_type == ScreenType.COMBAT_REWARD:
             for reward_item in self.game.screen.rewards:
                 if reward_item.reward_type == RewardType.POTION and self.game.are_potions_full():

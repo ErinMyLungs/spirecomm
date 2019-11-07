@@ -10,7 +10,7 @@ from spirecomm.spire.character import PlayerClass
 if __name__ == "__main__":
     train_class = PlayerClass.IRONCLAD
     seed = '3BLZA4F5DPM6P'
-    agent = SimpleAgent(chosen_class=train_class)
+    agent = SimpleAgent(chosen_class=train_class, use_default_drafter=False)
     coordinator = Coordinator()
     coordinator.signal_ready()
     coordinator.register_command_error_callback(agent.handle_error)
