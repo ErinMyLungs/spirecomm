@@ -7,7 +7,7 @@ import spirecomm.spire.card
 from spirecomm.spire.screen import RestOption
 from spirecomm.communication.action import *
 from spirecomm.ai.priorities import *
-
+from drafter import IroncladDraftModel
 
 class SimpleAgent:
 
@@ -20,6 +20,7 @@ class SimpleAgent:
         self.map_route = []
         self.chosen_class = chosen_class
         self.priorities = Priority()
+        self.drafter = IroncladDraftModel()
         self.change_class(chosen_class)
 
     def change_class(self, new_class):
@@ -224,10 +225,8 @@ class SimpleAgent:
                 count += 1
         return count
 
-    def choose_card_reward(self):
+    def default_choose_card_reward(self):
         reward_cards = self.game.screen.cards
-        print(reward_cards)
-        time.sleep(5)
         if self.game.screen.can_skip and not self.game.in_combat:
             pickable_cards = [card for card in reward_cards if self.priorities.needs_more_copies(card, self.count_copies_in_deck(card))]
         else:
@@ -240,6 +239,15 @@ class SimpleAgent:
         else:
             self.skipped_cards = True
             return CancelAction()
+
+    def choose_card_reward(self):
+        """
+        Function that chooses card rewards using neural net
+        :return: CardRewardAction with selected card
+        """
+        reward_cards = self.game.screen.cards
+        pick = self.drafter.choose_card(reward_cards)
+        return CardRewardAction(pick)
 
     def generate_map_route(self):
         node_rewards = self.priorities.MAP_NODE_PRIORITIES.get(self.game.act)
