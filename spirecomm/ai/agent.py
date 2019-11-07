@@ -176,8 +176,10 @@ class SimpleAgent:
             relics = self.game.screen.relics
             best_boss_relic = self.priorities.get_best_boss_relic(relics)
             return BossRewardAction(best_boss_relic)
+
         elif self.game.screen_type == ScreenType.SHOP_SCREEN:
             if self.game.screen.purge_available and self.game.gold >= self.game.screen.purge_cost:
+                # TODO: This just purgest the first card in deck. Possibly hook into AI? Purity metrics? Purge card least like archetype?
                 return ChooseAction(name="purge")
             for card in self.game.screen.cards:
                 if self.game.gold >= card.price and not self.priorities.should_skip(card):
@@ -186,6 +188,7 @@ class SimpleAgent:
                 if self.game.gold >= relic.price:
                     return BuyRelicAction(relic)
             return CancelAction()
+
         elif self.game.screen_type == ScreenType.GRID:
             if not self.game.choice_available:
                 return ProceedAction()
@@ -252,6 +255,7 @@ class SimpleAgent:
         :return: CardRewardAction with selected card
         """
         reward_cards = self.game.screen.cards
+        self.drafter.update_floor(self.game.floor)
         pick = self.drafter.choose_card(reward_cards)
         return CardRewardAction(pick)
 
