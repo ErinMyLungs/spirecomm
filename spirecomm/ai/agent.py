@@ -138,6 +138,7 @@ class SimpleAgent:
             if self.game.screen.event_id in ["Vampires", "Masked Bandits", "Knowing Skull", "Ghosts", "Liars Game", "Golden Idol", "Drug Dealer", "The Library"]:
                 return ChooseAction(len(self.game.screen.options) - 1)
             else:
+                # NOTE: This looks like where Neow's blessing is chosen with the first option every time.
                 return ChooseAction(0)
         elif self.game.screen_type == ScreenType.CHEST:
             return OpenChestAction()
@@ -225,6 +226,8 @@ class SimpleAgent:
 
     def choose_card_reward(self):
         reward_cards = self.game.screen.cards
+        print(reward_cards)
+        time.sleep(5)
         if self.game.screen.can_skip and not self.game.in_combat:
             pickable_cards = [card for card in reward_cards if self.priorities.needs_more_copies(card, self.count_copies_in_deck(card))]
         else:
