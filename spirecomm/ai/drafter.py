@@ -190,6 +190,7 @@ class IroncladDraftModel:
             return 0
         else:
             card_weights = current_deck @ self.weights
+            card_weights = card_weights.reshape(-1)
             for card in potential_choices:
                 idx = self.card_index_dict['cards'].get(card.name)
                 choices[card_weights[idx]] = card
