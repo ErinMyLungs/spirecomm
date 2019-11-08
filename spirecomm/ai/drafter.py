@@ -241,6 +241,9 @@ class IroncladDraftModel():
 
         return {card:int(count) for card, count in zip(cards, counts)}
 
+    def dump_weights(self, timestamp):
+        np.save(f'weights_{timestamp}', self.weights)
+
 # main for testing model functions
 if __name__ == '__main__':
 

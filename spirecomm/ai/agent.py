@@ -12,7 +12,7 @@ import csv
 
 class SimpleAgent:
 
-    def __init__(self, chosen_class=PlayerClass.THE_SILENT, use_default_drafter=False):
+    def __init__(self, chosen_class=PlayerClass.THE_SILENT, use_default_drafter=False, timestamp=None):
         self.game = Game()
         self.errors = 0
         self.choose_good_card = False
@@ -24,6 +24,7 @@ class SimpleAgent:
         self.drafter = IroncladDraftModel()
         self.change_class(chosen_class)
         self.use_default_drafter=use_default_drafter #if set to True, uses built in drafter from priorities module
+        self.timestamp = timestamp
 
     def change_class(self, new_class):
         self.chosen_class = new_class
@@ -225,9 +226,9 @@ class SimpleAgent:
             game_result['time'] = time.time()
 
             if self.use_default_drafter:
-                self.write_game_results('control_results.csv', game_result)
+                self.write_game_results(f'control_results_{self.timestamp}.csv', game_result)
             else:
-                self.write_game_results('game_results.csv', game_result)
+                self.write_game_results(f'game_results_{self.timestamp}.csv', game_result)
             return ProceedAction()
 
         else:
