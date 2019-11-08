@@ -336,3 +336,21 @@ class SimpleAgent:
         # This should never happen
         return ChooseAction(0)
 
+    def reset_drafter(self, filepath=None):
+        """
+        helper to reset drafter to default configuration between runs
+        :param filepath: filepath to weights.npy
+        """
+        if not filepath:
+            self.drafter = IroncladDraftModel()
+        else:
+            self.drafter = IroncladDraftModel(weights=filepath)
+
+    def update_timestamp(self):
+        """
+        Sets timestamp attribute
+        :param timestamp:
+        :return:
+        """
+        self.timestamp = str(int(time.time()))
+        return self.timestamp
