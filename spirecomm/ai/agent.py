@@ -42,7 +42,7 @@ class SimpleAgent:
     def get_next_action_in_game(self, game_state):
         self.game = game_state
         #time.sleep(0.07)
-        if self.game.choice_available:
+        if self.game.choice_available or self.game.screen_type == ScreenType.GAME_OVER:
             return self.handle_screen()
         if self.game.proceed_available:
             return ProceedAction()
