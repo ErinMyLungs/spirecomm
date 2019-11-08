@@ -184,13 +184,20 @@ class IroncladDraftModel:
         :param potential_choices: list of cards to select
         :return: single card to select
         """
-
+        current_deck = self.vectorize_deck().reshape(1, -1) #(1,75 deck)
+        choices = {}
         if len(potential_choices) <= 0:
             return 0
         else:
-            choice = random.choice(potential_choices)
-            self.update_deck(choice.name)
-            return choice
+            card_weights = current_deck @ self.weights
+            for card in potential_choices:
+                idx = self.card_index_dict['cards'].get(card.name)
+                choices[card_weights[idx]] = card
+
+            choice = choices.get(np.max(list(choices.keys())))
+            if choice:
+                return choice
+            return 0
 
     def update_floor(self, floor):
         if floor > self.floor:

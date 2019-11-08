@@ -245,7 +245,8 @@ class SimpleAgent:
             mode = 'w'
         with open(filepath, mode) as file:
             writer = csv.DictWriter(file, game_result.keys())
-            writer.writeheader()
+            if mode == 'w':
+                writer.writeheader()
             writer.writerow(game_result)
     def choose_rest_option(self):
         rest_options = self.game.screen.rest_options

@@ -11,25 +11,25 @@ from spirecomm.spire.character import PlayerClass
 if __name__ == "__main__":
     client = boto3.resource('s3')
     bucket = client.Bucket('1984withbunnies')
-    solo = False
+    solo = True
     control_group = False
 
     train_class = PlayerClass.IRONCLAD
     seed_list = [
-        "3BLZA4F5DPM6P",
+        "foobar", # problem seed
         "TKUZHLYGTK6B6",
         "MKMDE5BHDADPS",
         "5DWNQJBD5BPGM",
         "8O5SXDOKOJTT4",
         "JHHEA7KNEOGKI",
-        "LI7X71KSALAGR",
+        "new_bar", # problem seed
         "53HJXL2N4CEYI",
-        "E4BMONWA67GME",
+        "E4BMONWA67GME", #377dfjjkbolRH
         "LNYDX9VNZYATK",
     ]
 
     if solo:
-        seed_list = seed_list[:3]
+        seed_list = [seed_list[0], seed_list[-4]]
 
     timestamp = str(int(time.time()))
 
@@ -37,8 +37,8 @@ if __name__ == "__main__":
         chosen_class=train_class, use_default_drafter=control_group, timestamp=timestamp
     )
 
-    agent.drafter.dump_weights(timestamp)
-    bucket.upload(f'weights_{timestamp}.npy', f'weights/weights_{timestamp}.npy')
+    # agent.drafter.dump_weights(timestamp)
+    # bucket.upload_file(f'weights_{timestamp}.npy', f'weights/weights_{timestamp}.npy')
     coordinator = Coordinator()
     coordinator.signal_ready()
     coordinator.register_command_error_callback(agent.handle_error)
@@ -49,9 +49,10 @@ if __name__ == "__main__":
         result = coordinator.play_one_game(
             player_class=train_class, ascension_level=0, seed=seed
         )
-
+        print(result)
+        time.sleep(10)
     if control_group:
         filename = f'control_results_{timestamp}.csv'
     else:
         filename = f'game_results_{timestamp}.csv'
-    bucket.upload(filename, f'runs/{filename}')
+    bucket.upload_file(filename, f'runs/{filename}')
