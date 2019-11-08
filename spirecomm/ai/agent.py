@@ -1,6 +1,6 @@
 import time
 import random
-
+import os
 from spirecomm.spire.game import Game
 from spirecomm.spire.character import Intent, PlayerClass
 import spirecomm.spire.card
@@ -8,10 +8,11 @@ from spirecomm.spire.screen import RestOption
 from spirecomm.communication.action import *
 from spirecomm.ai.priorities import *
 from spirecomm.ai.drafter import IroncladDraftModel
+import csv
 
 class SimpleAgent:
 
-    def __init__(self, chosen_class=PlayerClass.THE_SILENT, use_default_drafter=False):
+    def __init__(self, chosen_class=PlayerClass.THE_SILENT, use_default_drafter=False, timestamp=None):
         self.game = Game()
         self.errors = 0
         self.choose_good_card = False
@@ -23,6 +24,7 @@ class SimpleAgent:
         self.drafter = IroncladDraftModel()
         self.change_class(chosen_class)
         self.use_default_drafter=use_default_drafter #if set to True, uses built in drafter from priorities module
+        self.timestamp = timestamp
 
     def change_class(self, new_class):
         self.chosen_class = new_class
@@ -41,7 +43,7 @@ class SimpleAgent:
     def get_next_action_in_game(self, game_state):
         self.game = game_state
         #time.sleep(0.07)
-        if self.game.choice_available:
+        if self.game.choice_available or self.game.screen_type == ScreenType.GAME_OVER:
             return self.handle_screen()
         if self.game.proceed_available:
             return ProceedAction()
@@ -142,8 +144,10 @@ class SimpleAgent:
             else:
                 # NOTE: This looks like where Neow's blessing is chosen with the first option every time.
                 return ChooseAction(0)
+
         elif self.game.screen_type == ScreenType.CHEST:
             return OpenChestAction()
+
         elif self.game.screen_type == ScreenType.SHOP_ROOM:
             if not self.visited_shop:
                 self.visited_shop = True
@@ -151,6 +155,7 @@ class SimpleAgent:
             else:
                 self.visited_shop = False
                 return ProceedAction()
+
         elif self.game.screen_type == ScreenType.REST:
             return self.choose_rest_option()
 
@@ -170,8 +175,10 @@ class SimpleAgent:
                     return CombatRewardAction(reward_item)
             self.skipped_cards = False
             return ProceedAction()
+
         elif self.game.screen_type == ScreenType.MAP:
             return self.make_map_choice()
+
         elif self.game.screen_type == ScreenType.BOSS_REWARD:
             relics = self.game.screen.relics
             best_boss_relic = self.priorities.get_best_boss_relic(relics)
@@ -198,15 +205,49 @@ class SimpleAgent:
                 available_cards = self.priorities.get_sorted_cards(self.game.screen.cards, reverse=True)
             num_cards = self.game.screen.num_cards
             return CardSelectAction(available_cards[:num_cards])
+
         elif self.game.screen_type == ScreenType.HAND_SELECT:
             if not self.game.choice_available:
                 return ProceedAction()
             # Usually, we don't want to choose the whole hand for a hand select. 3 seems like a good compromise.
             num_cards = min(self.game.screen.num_cards, 3)
             return CardSelectAction(self.priorities.get_cards_for_action(self.game.current_action, self.game.screen.cards, num_cards))
+
+        elif self.game.screen_type == ScreenType.GAME_OVER:
+            game_result = dict()
+            game_result['score'] = self.game.screen.score
+            if self.game.screen.victory == True:
+                game_result['score'] += 10000
+            game_result['floor'] = self.game.floor
+            game_result['seed'] = self.game.seed
+            game_result['choices'] = self.drafter.deck_pick
+            game_result['final_deck'] = self.drafter.deck
+            game_result['deck_vector'] = self.drafter.vectorize_deck()
+            game_result['time'] = time.time()
+
+            if self.use_default_drafter:
+                self.write_game_results(f'control_results_{self.timestamp}.csv', game_result)
+            else:
+                self.write_game_results(f'game_results_{self.timestamp}.csv', game_result)
+            return ProceedAction()
+
         else:
             return ProceedAction()
 
+    def write_game_results(self, filepath:str, game_result:dict):
+        """
+        takes in filepath and results and writes to csv file
+        :param filepath: filepath str. Writes to SlayTheSpire folder
+        :param game_result: dictionary of results
+        """
+        mode = 'a'
+        if not os.path.exists(os.path.abspath(filepath)):
+            mode = 'w'
+        with open(filepath, mode) as file:
+            writer = csv.DictWriter(file, game_result.keys())
+            if mode == 'w':
+                writer.writeheader()
+            writer.writerow(game_result)
     def choose_rest_option(self):
         rest_options = self.game.screen.rest_options
         if len(rest_options) > 0 and not self.game.screen.has_rested:
@@ -295,3 +336,21 @@ class SimpleAgent:
         # This should never happen
         return ChooseAction(0)
 
+    def reset_drafter(self, filepath=None):
+        """
+        helper to reset drafter to default configuration between runs
+        :param filepath: filepath to weights.npy
+        """
+        if not filepath:
+            self.drafter = IroncladDraftModel()
+        else:
+            self.drafter = IroncladDraftModel(weights=filepath)
+
+    def update_timestamp(self):
+        """
+        Sets timestamp attribute
+        :param timestamp:
+        :return:
+        """
+        self.timestamp = str(int(time.time()))
+        return self.timestamp
