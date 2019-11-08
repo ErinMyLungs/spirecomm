@@ -192,11 +192,14 @@ class IroncladDraftModel:
             card_weights = current_deck @ self.weights
             card_weights = card_weights.reshape(-1)
             for card in potential_choices:
-                name = card.name
-                name = name.replace("+", "").upper()
+                name = card.name.upper()
+                possible_slice = name.find('+')
+                if possible_slice != -1:
+                    name = name[:possible_slice]
 
                 idx = self.card_index_dict["cards"].get(name)
-
+                if not idx:
+                    continue
                 weight = card_weights[idx]
 
                 choices[weight] = card
