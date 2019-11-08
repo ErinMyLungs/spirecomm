@@ -1,6 +1,6 @@
 import time
 import random
-import datetime
+import os
 from spirecomm.spire.game import Game
 from spirecomm.spire.character import Intent, PlayerClass
 import spirecomm.spire.card
@@ -225,11 +225,11 @@ class SimpleAgent:
             game_result['time'] = time.time()
 
             if self.use_default_drafter:
-                self.write_game_results('control_results.csv', game_result)
+                self.write_game_results('/control_results.csv', game_result)
             else:
-                self.write_game_results('game_results.csv', game_result)
+                self.write_game_results('/game_results.csv', game_result)
             return ProceedAction()
-        
+
         else:
             return ProceedAction()
 
@@ -239,7 +239,10 @@ class SimpleAgent:
         :param filepath: filepath str. Writes to SlayTheSpire folder
         :param game_result: dictionary of results
         """
-        with open(filepath, 'a') as file:
+        mode = 'a'
+        if not os.path.exists(os.path.abspath(filepath)):
+            mode = 'w'
+        with open(filepath, mode) as file:
             writer = csv.DictWriter(file, game_result.keys())
             writer.writeheader()
             writer.writerow(game_result)
