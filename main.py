@@ -18,9 +18,4 @@ if __name__ == "__main__":
     coordinator.register_state_change_callback(agent.get_next_action_in_game)
     coordinator.register_out_of_game_callback(agent.get_next_action_out_of_game)
 
-    start = time.time()
     result = coordinator.play_one_game(player_class=train_class, ascension_level=0, seed=seed)
-    end = time.time() - start
-    with open('test_writing_314159.txt', 'w') as file:
-        file.write(str(end))
-    print(end)
