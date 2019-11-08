@@ -8,7 +8,7 @@ from spirecomm.spire.character import PlayerClass
 
 
 if __name__ == "__main__":
-    solo = sys.argv[1]
+    solo = True
 
     train_class = PlayerClass.IRONCLAD
     seed_list = [
@@ -25,7 +25,7 @@ if __name__ == "__main__":
     ]
 
     if solo:
-        seed_list = [seed_list[0]]
+        seed_list = seed_list[3]
 
     timestamp = str(int(time.time()))
 
