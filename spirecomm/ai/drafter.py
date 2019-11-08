@@ -2,6 +2,7 @@
 from spirecomm.ai.priorities import IroncladPriority
 import random
 import numpy as np
+import os
 
 class IroncladDraftModel():
     """
@@ -163,9 +164,10 @@ class IroncladDraftModel():
   73: 'Shrug It Off',
   74: 'Pommel Strike'}}
 
-        if not weights:
+        if not weights or not os.path.exists(os.path.abspath(weights)):
             self.weights = np.ones((75, 75))
-
+        else:
+            self.weights = np.load(weights)
 
     def choose_card(self, potential_choices):
         """

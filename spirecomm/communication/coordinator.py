@@ -215,7 +215,7 @@ class Coordinator:
             self.execute_next_action_if_ready()
             self.receive_game_state_update()
         if self.last_game_state.screen_type == ScreenType.GAME_OVER:
-            self.receive_game_state_update(block=True)
+            self.receive_game_state_update(block=False)
             return self.last_game_state.screen.victory
         else:
             return False
