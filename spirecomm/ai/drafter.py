@@ -7,7 +7,7 @@ class IroncladDraftModel():
     """
     A neural net drafter for The Ironclad class in Slay the Spire
     """
-    def __init__(self):
+    def __init__(self, weights:str=None):
         self.deck = {'Bash':1, 'Strike_R':5, 'Defend_R':4}
         self.floor = 0
         self.deck_pick = {}
@@ -162,6 +162,10 @@ class IroncladDraftModel():
   72: 'Ghostly Armor',
   73: 'Shrug It Off',
   74: 'Pommel Strike'}}
+
+        if not weights:
+            self.weights = np.ones((75, 75))
+
 
     def choose_card(self, potential_choices):
         """
