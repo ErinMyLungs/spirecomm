@@ -20,3 +20,18 @@ Notes:
 * SGA/SGD? Impurity metrics
 * How to optimize finding weights of 75x75 matrix
     * 2850 weights to optimize
+    
+
+9/8/19
+
+Business case:
+* Games like this live and die on game balance
+* MTG case study misbalanced cards
+    * huge costs having to reprint/release errata
+* Exploration of space with humans problematic
+    * unable to fully explore and depends on personal expertise
+    
+Reinforcement learning
+* find degenerate use cases and hopefully nix before they're problematic/printed
+* pre-test possible changes
+* find playstyles and possibly improve/give feedback on what cards/styles have good/bad winrates
