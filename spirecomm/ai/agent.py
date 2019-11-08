@@ -214,8 +214,8 @@ class SimpleAgent:
 
         elif self.game.screen_type == ScreenType.GAME_OVER:
             game_result = dict()
-            game_result['score'] = self.game.score
-            if self.game.victory == True:
+            game_result['score'] = self.game.screen.score
+            if self.game.screen.victory == True:
                 game_result['score'] += 10000
             game_result['floor'] = self.game.floor
             game_result['seed'] = self.game.seed

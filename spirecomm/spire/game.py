@@ -95,7 +95,7 @@ class Game:
         game.choice_available = "choice_list" in json_state
         if game.choice_available:
             game.choice_list = json_state.get("choice_list")
-
+        # TODO: Possibly add screen victory condition updates for final results
         # Combat state
 
         game.in_combat = game.room_phase == RoomPhase.COMBAT
