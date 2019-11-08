@@ -34,7 +34,7 @@ if __name__ == "__main__":
     timestamp = str(int(time.time()))
 
     agent = SimpleAgent(
-        chosen_class=train_class, use_default_drafter=control_group, timestamp=timestamp, bucket=bucket
+        chosen_class=train_class, use_default_drafter=control_group, timestamp=timestamp
     )
 
     agent.drafter.dump_weights(timestamp)
