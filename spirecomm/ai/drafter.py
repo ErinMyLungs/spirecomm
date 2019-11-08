@@ -3,6 +3,7 @@ from spirecomm.ai.priorities import IroncladPriority
 import random
 import numpy as np
 import os
+import time
 
 class IroncladDraftModel():
     """
@@ -175,6 +176,9 @@ class IroncladDraftModel():
         :param potential_choices: list of cards to select
         :return: single card to select
         """
+        print(potential_choices)
+        time.sleep(5)
+
         if len(potential_choices) <= 0:
             return(0)
         else:
@@ -242,7 +246,32 @@ class IroncladDraftModel():
         return {card:int(count) for card, count in zip(cards, counts)}
 
     def dump_weights(self, timestamp):
+        """
+        Dumps card weights to npy file to load later with same timestamp as other runs
+        :param timestamp: timestamp str of epoch time.
+        :return: weights_timestamp.npy file in same dir as script is run
+        """
         np.save(f'weights_{timestamp}', self.weights)
+
+    def update_weights(self, n_updates=10, learning_rate=0.1):
+        """
+        Randomly adjusts weights in card weight matrix.
+        :param n_updates:
+        :param learning_rate:
+        :return:
+        """
+        temp_weights = self.weights.astype(float)
+        x_coord, y_coord = np.where(np.tril(temp_weights, -1) ==0) #sets diag and upper to 0 and gives indeces
+        coords = list(zip(x_coord, y_coord))
+        weights_to_update = random.sample(coords, n_updates)
+        temp_weights = np.triu(temp_weights) #sets all values below diag to zero.
+
+        for x, y in weights_to_update:
+            temp_weights[x][y] = temp_weights[x][y] + (np.random.normal()*learning_rate)
+
+        temp_weights = np.maximum(temp_weights, temp_weights.T) #creates symmetric matrix from diag and upper
+
+        self.weights = temp_weights
 
 # main for testing model functions
 if __name__ == '__main__':
