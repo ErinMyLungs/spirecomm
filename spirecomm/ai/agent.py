@@ -247,7 +247,6 @@ class SimpleAgent:
             writer = csv.DictWriter(file, game_result.keys())
             writer.writeheader()
             writer.writerow(game_result)
-
     def choose_rest_option(self):
         rest_options = self.game.screen.rest_options
         if len(rest_options) > 0 and not self.game.screen.has_rested:

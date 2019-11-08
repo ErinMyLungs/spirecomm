@@ -1,6 +1,7 @@
 import itertools
 import sys
 import time
+import boto3
 
 from spirecomm.communication.coordinator import Coordinator
 from spirecomm.ai.agent import SimpleAgent
@@ -8,7 +9,10 @@ from spirecomm.spire.character import PlayerClass
 
 
 if __name__ == "__main__":
-    solo = True
+    client = boto3.resource('s3')
+    bucket = client.Bucket('1984withbunnies')
+    solo = False
+    control_group = False
 
     train_class = PlayerClass.IRONCLAD
     seed_list = [
@@ -25,15 +29,16 @@ if __name__ == "__main__":
     ]
 
     if solo:
-        seed_list = seed_list[3]
+        seed_list = seed_list[:3]
 
     timestamp = str(int(time.time()))
 
     agent = SimpleAgent(
-        chosen_class=train_class, use_default_drafter=False, timestamp=timestamp
+        chosen_class=train_class, use_default_drafter=control_group, timestamp=timestamp, bucket=bucket
     )
 
     agent.drafter.dump_weights(timestamp)
+    bucket.upload(f'weights_{timestamp}.npy', f'weights/weights_{timestamp}.npy')
     coordinator = Coordinator()
     coordinator.signal_ready()
     coordinator.register_command_error_callback(agent.handle_error)
@@ -44,3 +49,9 @@ if __name__ == "__main__":
         result = coordinator.play_one_game(
             player_class=train_class, ascension_level=0, seed=seed
         )
+
+    if control_group:
+        filename = f'control_results_{timestamp}.csv'
+    else:
+        filename = f'game_results_{timestamp}.csv'
+    bucket.upload(filename, f'runs/{filename}')
