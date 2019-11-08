@@ -223,14 +223,25 @@ class SimpleAgent:
             game_result['final_deck'] = self.drafter.deck
             game_result['deck_vector'] = self.drafter.vectorize_deck()
             game_result['time'] = time.time()
-            with open('game_results.csv', 'a') as file:
-                w = csv.DictWriter(file, game_result.keys())
-                w.writeheader()
-                w.writerow(game_result)
 
+            if self.use_default_drafter:
+                self.write_game_results('control_results.csv', game_result)
+            else:
+                self.write_game_results('game_results.csv', game_result)
 
         else:
             return ProceedAction()
+
+    def write_game_results(self, filepath:str, game_result:dict):
+        """
+        takes in filepath and results and writes to csv file
+        :param filepath: filepath str. Writes to SlayTheSpire folder
+        :param game_result: dictionary of results
+        """
+        with open(filepath, 'a') as file:
+            writer = csv.DictWriter(file, game_result.keys())
+            writer.writeheader()
+            writer.writerow(game_result)
 
     def choose_rest_option(self):
         rest_options = self.game.screen.rest_options
