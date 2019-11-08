@@ -1,6 +1,6 @@
 import time
 import random
-
+import datetime
 from spirecomm.spire.game import Game
 from spirecomm.spire.character import Intent, PlayerClass
 import spirecomm.spire.card
@@ -8,6 +8,7 @@ from spirecomm.spire.screen import RestOption
 from spirecomm.communication.action import *
 from spirecomm.ai.priorities import *
 from spirecomm.ai.drafter import IroncladDraftModel
+import csv
 
 class SimpleAgent:
 
@@ -142,8 +143,10 @@ class SimpleAgent:
             else:
                 # NOTE: This looks like where Neow's blessing is chosen with the first option every time.
                 return ChooseAction(0)
+
         elif self.game.screen_type == ScreenType.CHEST:
             return OpenChestAction()
+
         elif self.game.screen_type == ScreenType.SHOP_ROOM:
             if not self.visited_shop:
                 self.visited_shop = True
@@ -151,6 +154,7 @@ class SimpleAgent:
             else:
                 self.visited_shop = False
                 return ProceedAction()
+
         elif self.game.screen_type == ScreenType.REST:
             return self.choose_rest_option()
 
@@ -170,8 +174,10 @@ class SimpleAgent:
                     return CombatRewardAction(reward_item)
             self.skipped_cards = False
             return ProceedAction()
+
         elif self.game.screen_type == ScreenType.MAP:
             return self.make_map_choice()
+
         elif self.game.screen_type == ScreenType.BOSS_REWARD:
             relics = self.game.screen.relics
             best_boss_relic = self.priorities.get_best_boss_relic(relics)
@@ -198,12 +204,31 @@ class SimpleAgent:
                 available_cards = self.priorities.get_sorted_cards(self.game.screen.cards, reverse=True)
             num_cards = self.game.screen.num_cards
             return CardSelectAction(available_cards[:num_cards])
+
         elif self.game.screen_type == ScreenType.HAND_SELECT:
             if not self.game.choice_available:
                 return ProceedAction()
             # Usually, we don't want to choose the whole hand for a hand select. 3 seems like a good compromise.
             num_cards = min(self.game.screen.num_cards, 3)
             return CardSelectAction(self.priorities.get_cards_for_action(self.game.current_action, self.game.screen.cards, num_cards))
+
+        elif self.game.screen_type == ScreenType.GAME_OVER:
+            game_result = dict()
+            game_result['score'] = self.game.score
+            if self.game.victory == True:
+                game_result['score'] += 10000
+            game_result['floor'] = self.game.floor
+            game_result['seed'] = self.game.seed
+            game_result['choices'] = self.drafter.deck_pick
+            game_result['final_deck'] = self.drafter.deck
+            game_result['deck_vector'] = self.drafter.vectorize_deck()
+            game_result['time'] = time.time()
+            with open('game_results.csv', 'a') as file:
+                w = csv.DictWriter(file, game_result.keys())
+                w.writeheader()
+                w.writerow(game_result)
+
+
         else:
             return ProceedAction()
 
