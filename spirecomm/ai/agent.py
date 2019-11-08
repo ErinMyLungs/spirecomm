@@ -225,9 +225,9 @@ class SimpleAgent:
             game_result['time'] = time.time()
 
             if self.use_default_drafter:
-                self.write_game_results('/control_results.csv', game_result)
+                self.write_game_results('control_results.csv', game_result)
             else:
-                self.write_game_results('/game_results.csv', game_result)
+                self.write_game_results('game_results.csv', game_result)
             return ProceedAction()
 
         else:
