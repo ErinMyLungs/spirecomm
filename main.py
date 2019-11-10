@@ -89,7 +89,7 @@ if __name__ == "__main__":
             )
             current_score.append(score)
             current_floor.append(floor)
-
+            agent.reset_drafter(current_weights)
         if control_group:
             filename = f"control_results_{timestamp}.csv"
         else:
@@ -113,13 +113,16 @@ if __name__ == "__main__":
                 "floor": np.mean(current_floor),
             }
         )
-    if not control_group:
-        mode = "a"
-        if not os.path.exists(os.path.abspath("model_weight_results.csv")):
-            mode = "w"
+        if not control_group and ep%5 == 0:
+            # write results every 5 epochs so if having to abort a long run early, progress isn't lost
+            mode = "a"
+            if not os.path.exists(os.path.abspath("model_weight_results.csv")):
+                mode = "w"
 
-        with open("model_weight_results.csv", mode) as result_csv:
-            writer = csv.DictWriter(result_csv, weights_result_list[0].keys())
-            if mode == "w":
-                writer.writeheader()
-            writer.writerows(weights_result_list)
+            with open("model_weight_results.csv", mode) as result_csv:
+                writer = csv.DictWriter(result_csv, weights_result_list[0].keys())
+                if mode == "w":
+                    writer.writeheader()
+                writer.writerows(weights_result_list)
+
+            weights_result_list = list()
