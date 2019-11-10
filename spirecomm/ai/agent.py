@@ -194,7 +194,7 @@ class SimpleAgent:
             for relic in self.game.screen.relics:
                 if self.game.gold >= relic.price:
                     return BuyRelicAction(relic)
-            return CancelAction()
+            return LeaveAction()
 
         elif self.game.screen_type == ScreenType.GRID:
             if not self.game.choice_available:

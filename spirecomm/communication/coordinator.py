@@ -108,6 +108,10 @@ class Coordinator:
 
         :return: None
         """
+        # checks for action queue having Nones in the queue and pops them out to avoid errors.
+        while len(self.action_queue) > 0 and not self.action_queue[0]:
+            self.action_queue.popleft()
+
         if len(self.action_queue) > 0 and self.action_queue[0].can_be_executed(self):
             self.execute_next_action()
 
