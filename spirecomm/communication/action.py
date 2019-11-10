@@ -106,6 +106,10 @@ class LeaveAction(Action):
     def __init__(self):
         super().__init__("leave")
 
+class ReturnAction(Action):
+    def __init__(self):
+        super().__init__('return')
+
 class ChooseAction(Action):
     """An action to use the CommunicationMod 'Choose' command"""
 
