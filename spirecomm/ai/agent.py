@@ -55,6 +55,9 @@ class SimpleAgent:
             return self.get_play_card_action()
         if self.game.end_available:
             return EndTurnAction()
+        if self.game.leave_available:
+            return LeaveAction()
+
         if self.game.cancel_available:
             return CancelAction()
 

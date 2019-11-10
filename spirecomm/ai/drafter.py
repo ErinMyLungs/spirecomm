@@ -203,8 +203,11 @@ class IroncladDraftModel:
                 weight = card_weights[idx]
 
                 choices[weight] = card
-
-            choice = choices.get(np.max(list(choices.keys())))
+            try:
+                # TODO: This breaks when offered all colorless cards. Full sized matrix will fix this IMO
+                choice = choices.get(np.max(list(choices.keys())))
+            except ValueError:
+                choice = random.choice(potential_choices)
             if choice:
                 all_choices = [card.name.upper() for card in potential_choices]
                 all_choices.append(choice.name.upper())
