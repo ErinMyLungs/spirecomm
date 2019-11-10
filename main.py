@@ -46,11 +46,14 @@ if __name__ == "__main__":
     coordinator.register_state_change_callback(agent.get_next_action_in_game)
     coordinator.register_out_of_game_callback(agent.get_next_action_out_of_game)
 
-    all_results = pd.read_csv('model_weight_results.csv').tail(10)
-    _, current_weights, high_score, high_floor = all_results.loc[all_results.floor == all_results.floor.max()].values[0]
-    # current_weights = 'weights_1573361699.npy'
-    # high_floor = 13.4
-    # high_score = 80.7
+    if not os.path.exists(os.path.abspath('model_weight_results.csv')):
+        current_weights = None
+        high_floor = 0.0
+        high_score = 0.0
+    else:
+        all_results = pd.read_csv('model_weight_results.csv').tail(10)
+        _, current_weights, high_score, high_floor = all_results.loc[all_results.floor == all_results.floor.max()].values[0]
+
     weights_result_list = list()
 
     for ep in range(epochs):
