@@ -4,7 +4,7 @@ import random
 import numpy as np
 import os
 import time
-
+import csv
 
 class IroncladDraftModel:
     """
@@ -186,23 +186,38 @@ class IroncladDraftModel:
         """
         current_deck = self.vectorize_deck().reshape(1, -1)  # (1,75 deck)
         choices = {}
+
+        gui = list()
+        base_gui_dict = {'name':None, 'weight':None}
         if len(potential_choices) <= 0:
             return 0
         else:
             card_weights = current_deck @ self.weights
             card_weights = card_weights.reshape(-1)
             for card in potential_choices:
+                gui_dict = base_gui_dict.copy()
                 name = card.name.upper()
                 possible_slice = name.find('+')
                 if possible_slice != -1:
                     name = name[:possible_slice]
 
+                gui_dict['name'] = name
                 idx = self.card_index_dict["cards"].get(name)
-                if not idx:
+                if idx == None: #this HAS to be == None or Headbutt at index 0 returns NaN, which is silly.
+                    gui_dict['weight'] = 'NaN'
+                    gui.append(gui_dict)
                     continue
                 weight = card_weights[idx]
-
+                gui_dict['weight'] = weight
                 choices[weight] = card
+
+                gui.append(gui_dict)
+
+            with open(os.path.abspath('gui.csv'), 'w') as g:
+                writer = csv.DictWriter(g, gui[0].keys())
+                writer.writeheader()
+                writer.writerows(gui)
+            time.sleep(3)
             try:
                 # TODO: This breaks when offered all colorless cards. Full sized matrix will fix this IMO
                 choice = choices.get(np.max(list(choices.keys())))

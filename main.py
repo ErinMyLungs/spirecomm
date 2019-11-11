@@ -15,9 +15,9 @@ if __name__ == "__main__":
     client = boto3.resource("s3")
     bucket = client.Bucket("1984withbunnies")
 
-    solo = False
+    solo = True
     control_group = False
-    epochs = 25
+    epochs = 1
 
     train_class = PlayerClass.IRONCLAD
     seed_list = [
@@ -34,7 +34,7 @@ if __name__ == "__main__":
     ]
 
     if solo:
-        seed_list = seed_list[-3:]
+        seed_list = [seed_list[-1]]
 
     timestamp = str(int(time.time()))
 
