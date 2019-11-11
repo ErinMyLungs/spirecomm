@@ -203,10 +203,17 @@ class IroncladDraftModel:
                 weight = card_weights[idx]
 
                 choices[weight] = card
-
-            choice = choices.get(np.max(list(choices.keys())))
+            try:
+                # TODO: This breaks when offered all colorless cards. Full sized matrix will fix this IMO
+                choice = choices.get(np.max(list(choices.keys())))
+            except ValueError:
+                choice = random.choice(potential_choices)
             if choice:
-                self.update_deck(choice.name.upper())
+                all_choices = [card.name.upper() for card in potential_choices]
+                all_choices.append(choice.name.upper())
+                val, counts = np.unique(np.array(all_choices), return_counts=True)
+
+                self.update_deck(choice.name.upper(), list(zip(val, counts-1)))
                 return choice
             return 0
 
@@ -214,7 +221,7 @@ class IroncladDraftModel:
         if floor > self.floor:
             self.floor = floor
 
-    def update_deck(self, card, remove=False):
+    def update_deck(self, card, choices, remove=False):
         """
         Updates deck dictionary, incrementing count of cards up or down 1 and popping out any cards that are 0
         :param card: Card from card select
@@ -233,7 +240,7 @@ class IroncladDraftModel:
             self.deck[card] += 1
         else:
             self.deck[card] = 1
-        self.deck_pick[len(self.deck_pick)] = card
+        self.deck_pick[len(self.deck_pick)] = choices
         return
 
     def vectorize_deck(self):
@@ -303,6 +310,20 @@ class IroncladDraftModel:
 
         self.weights = temp_weights
 
+    def update_weights_by_cards(self, indeces, learning_rate=0.1):
+        """
+        updates weights of cards available in choices
+        :param indeces:
+        :param learning_rate:
+        :return:
+        """
+        temp_weights = self.weights.astype(float).copy()
+        for idx in indeces:
+            temp_weights[:, idx] = np.random.normal(size=75)*learning_rate
+            temp_weights[idx, :] = np.random.normal(size=75)*learning_rate
+        temp_weights = np.triu(temp_weights)
+        temp_weights = np.maximum(temp_weights, temp_weights.T)
+        self.weights = temp_weights
 
 # main for testing model functions
 if __name__ == "__main__":

@@ -55,6 +55,10 @@ class SimpleAgent:
             return self.get_play_card_action()
         if self.game.end_available:
             return EndTurnAction()
+        # TODO: Possible fix for opening deck view on accident
+        if self.game.screen_type == None:
+            return ReturnAction()
+
         if self.game.cancel_available:
             return CancelAction()
 
@@ -156,6 +160,10 @@ class SimpleAgent:
                 self.visited_shop = False
                 return ProceedAction()
 
+        elif self.game.screen_type == ScreenType.SHOP_SCREEN:
+            if self.visited_shop:
+                return LeaveAction()
+
         elif self.game.screen_type == ScreenType.REST:
             return self.choose_rest_option()
 
@@ -194,7 +202,7 @@ class SimpleAgent:
             for relic in self.game.screen.relics:
                 if self.game.gold >= relic.price:
                     return BuyRelicAction(relic)
-            return CancelAction()
+            return LeaveAction()
 
         elif self.game.screen_type == ScreenType.GRID:
             if not self.game.choice_available:
@@ -230,7 +238,8 @@ class SimpleAgent:
             else:
                 self.write_game_results(f'game_results_{self.timestamp}.csv', game_result)
             return ProceedAction()
-
+        elif self.game.screen_type == None:
+            return ReturnAction()
         else:
             return ProceedAction()
 
