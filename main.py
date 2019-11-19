@@ -18,7 +18,10 @@ if __name__ == "__main__":
     solo = True
     control_group = False
     epochs = 1
-
+    training = False
+    presenting = True
+    presentation_weight = 'weights_1573453879.npy'
+    presentation_seed = '105'
     train_class = PlayerClass.IRONCLAD
     seed_list = [
         "foobar",  # problem seed
@@ -34,7 +37,7 @@ if __name__ == "__main__":
     ]
 
     if solo:
-        seed_list = [seed_list[-1]]
+        seed_list = [seed_list[0]]
 
     timestamp = str(int(time.time()))
 
@@ -46,8 +49,8 @@ if __name__ == "__main__":
     coordinator.register_state_change_callback(agent.get_next_action_in_game)
     coordinator.register_out_of_game_callback(agent.get_next_action_out_of_game)
 
-    if not os.path.exists(os.path.abspath('model_weight_results.csv')):
-        current_weights = None
+    if not os.path.exists(os.path.abspath('model_weight_results.csv')) or not training:
+        current_weights = presentation_weight
         high_floor = 0.0
         high_score = 0.0
     else:
@@ -55,6 +58,33 @@ if __name__ == "__main__":
         _, current_weights, high_score, high_floor = all_results.loc[all_results.floor == all_results.floor.max()].values[0]
 
     weights_result_list = list()
+
+    if presenting:
+        use_theirs = False
+        their_floor, their_score = 0, 0
+        my_floor, my_score = 0, 0
+        seed_start = 26
+        while presenting:
+            agent.reset_drafter(presentation_weight)
+            agent.use_default_drafter=use_theirs
+            score, floor = coordinator.play_one_game(player_class=train_class, ascension_level=0, seed='105')
+            # break
+            # if use_theirs:
+            #     their_floor, their_score = floor, score
+            #
+            # else:
+            #     my_floor, my_score = floor, score
+            # if use_theirs:
+            #     if their_floor >= my_floor:
+            #         exit()
+            #         their_floor, their_score, my_floor, my_score = 0,0,0,0
+            #         seed_start +=1
+            #         # presentation_seed = str(seed_start)
+            #     else:
+            #         print(presentation_seed)
+            #         break
+            # use_theirs = not(use_theirs)
+    exit()
 
     for ep in range(epochs):
         if ep != 0:

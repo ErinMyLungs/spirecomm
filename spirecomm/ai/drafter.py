@@ -217,7 +217,7 @@ class IroncladDraftModel:
                 writer = csv.DictWriter(g, gui[0].keys())
                 writer.writeheader()
                 writer.writerows(gui)
-            time.sleep(3)
+            time.sleep(5)
             try:
                 # TODO: This breaks when offered all colorless cards. Full sized matrix will fix this IMO
                 choice = choices.get(np.max(list(choices.keys())))

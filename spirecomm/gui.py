@@ -5,9 +5,9 @@ import numpy as np
 
 spire_cards = os.path.abspath('/home/erin/.steam/steam/steamapps/common/SlayTheSpire/cards')
 layout = [
-     [sg.Image(spire_cards+'/Strike_R.png', key='CARD0', size=(200, 155)), sg.Text('NaN___', key='CARD0_SCORE', font=('Ariel',20))],
-     [sg.Image(spire_cards+'/Defend_R.png', key="CARD1", size=(200, 155)), sg.Text('NaN___', key='CARD1_SCORE', font=('Ariel',20))],
-     [sg.Image(spire_cards+'/PommelStrike.png', key="CARD2", size=(200, 155)), sg.Text('NaN___', key='CARD2_SCORE', font=('Ariel',20))]
+     [sg.Image(spire_cards+'/STRIKE_R.png', key='CARD0', size=(200, 155)), sg.Text('NaN___', key='CARD0_SCORE', font=('Ariel',20))],
+     [sg.Image(spire_cards+'/DEFEND_R.png', key="CARD1", size=(200, 155)), sg.Text('NaN___', key='CARD1_SCORE', font=('Ariel',20))],
+     [sg.Image(spire_cards+'/POMMEL_STRIKE.png', key="CARD2", size=(200, 155)), sg.Text('NaN___', key='CARD2_SCORE', font=('Ariel',20))]
 ]
 sg.change_look_and_feel('Grey')
 window = sg.Window('Draft Bot Card Scores', layout)
