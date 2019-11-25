@@ -12,12 +12,16 @@ import pandas as pd
 import ast
 
 if __name__ == "__main__":
-    client = boto3.resource("s3")
-    bucket = client.Bucket("1984withbunnies")
 
+    boto = False
     solo = False
     control_group = False
-    epochs = 25
+    epochs = 2
+
+
+    if boto:
+        client = boto3.resource("s3")
+        bucket = client.Bucket("1984withbunnies")
 
     train_class = PlayerClass.IRONCLAD
     seed_list = [
@@ -34,7 +38,7 @@ if __name__ == "__main__":
     ]
 
     if solo:
-        seed_list = seed_list[-3:]
+        seed_list = [seed_list[-3]]
 
     timestamp = str(int(time.time()))
 
@@ -79,7 +83,8 @@ if __name__ == "__main__":
         possible_weights = f"weights_{timestamp}.npy"
 
         # upload weights
-        bucket.upload_file(possible_weights, f"weights/weights_{timestamp}.npy")
+        if boto:
+          bucket.upload_file(possible_weights, f"weights/weights_{timestamp}.npy")
 
         current_score = list()
         current_floor = list()
@@ -95,7 +100,9 @@ if __name__ == "__main__":
         else:
             filename = f"game_results_{timestamp}.csv"
 
-        bucket.upload_file(filename, f"runs/{filename}")  # upload run stats
+        if boto:
+            bucket.upload_file(filename, f"runs/{filename}")  # upload run stats
+
         if np.mean(current_floor) >= high_floor:
             current_weights = possible_weights
             high_floor = np.mean(current_floor)

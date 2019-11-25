@@ -1,23 +1,28 @@
-# spirecomm
-A package for using Communication Mod with Slay the Spire, plus a simple AI
+# Reinnforcement Learning Drafting Bot
+A package for using Communication Mod with Slay the Spire, plus a simple AI with a reinforcement learning drafting AI module.
 
-## Communication Mod
+![draftbot card](utilities/pics/draftbot.png)
 
-Communication Mod is a mod that allows communication between Slay the Spire and an external process. It can be found here:
+### Tech Used:
+* Python
+* numpy
+* pandas
+* PySimpleGUI (In GUI and Presentation branch)
+* Reinforcement Learning
+* A/B Testing
 
-https://github.com/ForgottenArbiter/CommunicationMod
-
-The spirecomm package facilitates communicating with Slay the Spire through Communication Mod and accessing the state of the game.
-
-## Requirements:
-
-- Python 3.5+
-- kivy, only for the example GUI for Communication Mod, found in utilities
-
-## Running the AI:
-
-To run a simple Slay the Spire AI, configure Communication Mod to run main.py
-
-## Installing spirecomm:
-
-Run `python setup.py install` from the distribution root directory
+## Setup:
+1. Install [Communication Mod](https://github.com/ForgottenArbiter/CommunicationMod) and prereqs
+    * ModTheSpire - Steam Workshop version
+    * BaseMod - Steam Workshop version
+1. Run modded Slay The Spire with communication mod enabled
+1. Update Communicaton Mod Config that is created afterwards
+    * `~/.config/ModTheSpire/CommunicationMod/config.properties` for linux
+1. set `command=python3 path_to_script/main.py` 
+1. Set specific run configs
+    * `boto = False` :Set to true and update AWS resources to point to personal buckets for backing up training data to s3 bucket
+    * `solo = False` : Run single seed from seed_list, currently 53HJXL2N4CEYI
+    * `control_group = False` : Set to True for using built-in drafter (in priorities.py)
+    * `epochs = 2` : How many traversals of the seed_list. 1 means each seed is played once.
+    
+    
