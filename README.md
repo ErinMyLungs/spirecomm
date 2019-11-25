@@ -1,7 +1,11 @@
 # Reinnforcement Learning Drafting Bot
 A package for using Communication Mod with Slay the Spire, plus a simple AI with a reinforcement learning drafting AI module.
 
+<p align="center">
+
 ![draftbot card](utilities/pics/draftbot.png)
+
+</p>
 
 ### Tech Used:
 * Python
