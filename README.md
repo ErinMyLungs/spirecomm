@@ -11,8 +11,6 @@ A package for using Communication Mod with Slay the Spire, plus a simple AI with
 
 </p>
 
-### Tech Used:
-
 
 ## Setup:
 1. Install [Communication Mod](https://github.com/ForgottenArbiter/CommunicationMod) and prereqs
